@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Stat Tracker</title>
+    <style>
+        :root {
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --border: #d2d2d7;
+            --accent: #007aff;
+            --accent-hover: #0056d3;
+            --danger: #ff3b30;
+            --danger-hover: #d70015;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.08);
+            --shadow-heavy: rgba(0, 0, 0, 0.12);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.18);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --bg-secondary: #1c1c1e;
+            --bg-card: #2c2c2e;
+            --text-primary: #f2f2f7;
+            --text-secondary: #8e8e93;
+            --text-tertiary: #636366;
+            --border: #38383a;
+            --accent: #0a84ff;
+            --accent-hover: #409cff;
+            --danger: #ff453a;
+            --danger-hover: #ff6961;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.5);
+            --shadow-heavy: rgba(0, 0, 0, 0.7);
+            --glass-bg: rgba(28, 28, 30, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            padding: 2rem;
+            min-height: 100vh;
+            transition: all 0.4s cubic-bezier(0.28, 0, 0.63, 1);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 122, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 59, 48, 0.03) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1.5rem 0;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            transition: all 0.4s cubic-bezier(0.28, 0, 0.63, 1);
+            animation: slideDown 0.8s cubic-bezier(0.28, 0, 0.63, 1);
+        }
+
+        .header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--shadow-medium);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.022em;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff3b30 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.28, 0, 0.63, 1);
+            box-shadow: 0 2px 8px var(--shadow-light);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px var(--shadow-medium);
+            background: var(--bg-secondary);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.28, 0, 0.63, 1);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+            letter-spacing: -0.01em;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.25);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.35);
+        }
+
+        .form-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            transition: all 0.4s cubic-bezier(0.28, 0, 0.63, 1);
+            animation: slideUp 0.8s cubic-bezier(0.28, 0, 0.63, 1) 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px var(--shadow-medium);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 1.5rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        input {
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.28, 0, 0.63, 1);
+            box-shadow: 0 2px 8px var(--shadow-light);
+            letter-spacing: -0.01em;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1), 0 4px 16px var(--shadow-medium);
+            transform: translateY(-2px);
+        }
+
+        .stats-section {
+            animation: fadeIn 1s cubic-bezier(0.28, 0, 0.63, 1) 0.4s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            letter-spacing: -0.022em;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px var(--shadow-light);
+            transition: all 0.4s cubic-bezier(0.28, 0, 0.63, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #ff3b30);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px var(--shadow-medium);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-number {
+            background: linear-gradient(135deg, var(--accent), #ff3b30);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .stat-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .stat-detail {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            letter-spacing: -0.022em;
+        }
+
+        .no-stats {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px var(--shadow-light);
+        }
+
+        .no-stats-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .no-stats strong {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏀 Basketball Stats</h1>
+            <div class="header-controls">
+                <span class="user-info">Welcome, {{ current_user.username }}</span>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Player Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter player name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Game Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Points</label>
+                        <input type="number" id="points" name="points" placeholder="0" min="0" required>
+                    </div>
+                    <button type="submit" class="btn">Add Stat</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="stats-section">
+            {% if stats %}
+                <h2>Recent Stats ({{ stats|length }})</h2>
+                {% for stat in stats %}
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-number">{{ loop.index }}</div>
+                        <form action="{{ url_for('delete', stat_id=stat['id'] if stat['id'] is defined else stat.id) }}" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this stat?')">Delete</button>
+                        </form>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-detail">
+                            <div class="stat-label">Player</div>
+                            <div class="stat-value">{{ stat['name'] if stat['name'] is defined else stat.name }}</div>
+                        </div>
+                        <div class="stat-detail">
+                            <div class="stat-label">Date</div>
+                            <div class="stat-value">{{ stat['date'] if stat['date'] is defined else stat.date }}</div>
+                        </div>
+                        <div class="stat-detail">
+                            <div class="stat-label">Points</div>
+                            <div class="stat-value">{{ stat['points'] if stat['points'] is defined else stat.points }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-stats">
+                    <div class="no-stats-icon">📊</div>
+                    <strong>No stats recorded yet</strong>
+                    <div>Add your first basketball stat using the form above!</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.querySelector('.theme-toggle');
+            const currentTheme = html.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                html.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+    </script>
+</body>
+</html>
