@@ -120,5 +120,5 @@ def favicon():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", debug=True)
 # This code is a simple Flask application that allows users to register, log in, and manage statistics.
